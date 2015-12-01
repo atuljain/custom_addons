@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data noupdate="1">
+
+        <record id="email_template_accomodation_confirmation" model="email.template">
+            <field name="name">Accommodation Confirmation</field>
+            <field name="model_id" ref="event.model_event_registration"/>
+            <field name="email_from">${(user.email)|safe}</field>
+            <field name="email_to">${(object.accommodation_id.email)}</field>
+            <field name="subject">Accommodation confirmation for ${object.event_id.name}</field>
+				<field name="body_html"><![CDATA[
+				<p>Hello ${object.accommodation_id.name},</p>
+				<p> You have been booked for the event ${object.event_id.name}, This guest will stay for ${object.event_id.days_to_stay}.
+				
+				Your Guest Details: 
+				                          
+				Name: ${object.name},
+				Phone No: ${object.phone},
+				Email: ${object.email},
+				Adult/Chldren: ${object.age},
+				Country: ${object.country_id.name}.
+				
+				For any further information please contact our event department.</p>
+				<p>Thank you for your support!</p>
+				<p>Best regards</p>
+			]]></field>
+        </record>
+
+        <record id="email_template_registration_confirmation" model="email.template">
+            <field name="name">Registration Confirmation</field>
+            <field name="model_id" ref="event.model_event_registration"/>
+            <field name="email_from">${(object.email)|safe}</field>
+            <field name="email_to">${(object.user_id.email)}</field>
+            <field name="subject">Registration confirmation for ${object.event_id.name}</field>
+				<field name="body_html"><![CDATA[
+				<p>Hello ${object.user_id.name},</p>
+				<p> Your registration for the event ${object.event_id.name} has been confirmed.
+				
+				Your accomodation for this is fixed at following venue.                           
+				Owner Name: ${object.accommodation_id.partner_id.name},
+				Address: ${object.accommodation_id.partner_id.street},
+				${object.accommodation_id.partner_id.city},
+				${object.accommodation_id.partner_id.zip},
+				${object.accommodation_id.partner_id.country_id.name}.
+				
+				For any further information please contact our event department.</p>
+				<p>Thank you for your participation!</p>
+				<p>Best regards</p>
+			]]></field>
+        </record>
+        
+    </data>
+</openerp>

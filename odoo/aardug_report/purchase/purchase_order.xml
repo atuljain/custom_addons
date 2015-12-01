@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        
+        <report 
+            id="report_purchase_order_two"
+            model="purchase.order"
+            string="werkbon"
+            report_type="qweb-pdf"
+            name="aardug_report.report_purchaseorder_new"
+            file="aardug_report.report_purchaseorder_new"
+            />
+        
+    </data>
+</openerp>

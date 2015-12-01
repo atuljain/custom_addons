@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<openerp>
+	<data>
+		<record model="ir.ui.view" id="course_form">
+			<field name="name">Course Form View</field>
+			<field name="model">openacademy.course</field>
+			<field name="arch" type="xml">
+				<form string="Course" version="7.0">
+					<sheet>
+						<!-- <field name="image"> -->
+						<field name="image" widget="image" class="oe_left oe_avatar"/>
+						<div class="or_title oe_left">
+							<h1>
+								<field name="name" placeholder="Course Title"/>
+							</h1>
+							
+							<field name="duration"/>
+							<field name="responsible"/>
+						</div>
+						<notebook>
+							<page string="Description">
+								<field name="description"/>
+							</page>
+							<page string="Sessions">
+								<field name="sessions"/>
+							</page>	
+							<page string="Html">
+								<field name="html"/>
+							</page>
+						</notebook>
+
+					</sheet>
+					
+				</form>
+			</field>
+		</record>
+		<record model="ir.ui.view" id="course_tree">
+			<field name="name">Course Tree View</field>
+			<field name="model">openacademy.course</field>
+			<field name="arch" type="xml">
+				<tree string="Course" editable="True">
+					<field name="name"/>					
+					<field name="responsible"/>
+				</tree>
+			</field>
+		</record>
+
+		<record model="ir.actions.act_window" id="action_course">
+			<field name="name">Course</field>
+			<field name="res_model">openacademy.course</field>
+			<field name="view_mode">form,tree</field>
+			
+		</record>
+		<menuitem name="Course" id="menu_course" parent="menu_general" action="action_course"/>
+	</data>
+</openerp>

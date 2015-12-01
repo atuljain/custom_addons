@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+<!-- Defining Parents Menu Item -->    
+		<menuitem id="menu_compilance_main" name="Compilance"/>
+        <menuitem id="menu_compilance_all" name="Compilance" parent="menu_compilance_main"/>
+
+<!-- Compilance Module Form View -->
+		<record id="view_complinace_form" model="ir.ui.view">
+            <field name="name">hr.compilance.form</field>
+            <field name="model">hr.compilance</field>
+            <field name="arch" type="xml">
+            	<form string="Compilance" version="7.0"> 
+            		<sheet>
+            		<group>
+            		<group>
+            			 	<field name="name"/>
+            		</group>
+            		<group>
+                 			<field name="department"/>
+                 	</group>
+                 	</group>
+                		<notebook>
+                    		<page string="Description">
+								<field name="description"/>
+	                		</page>    
+	                		<page string="Attachments">
+                        		<field name="attachments" widget="many2many_binary"/>
+                    		</page>
+                		</notebook> 
+                	</sheet>
+                </form>
+            </field>
+        </record>
+<!-- Compilance Tree View -->
+        <record id="view_compilance_tree"  model="ir.ui.view">
+        	<field name="name">hr.compilance</field>
+           	<field name="model">hr.compilance</field>
+        	<field name="arch" type="xml">
+            	<tree string="Compilance">
+                  	<field name="name"/>
+                   	<field name="department"/>
+               	</tree>
+           	</field>
+        </record>
+<!-- Compilance Module Action -->
+        <record model="ir.actions.act_window" id="action_hr_compilance">
+            <field name="name">Compilance</field>
+            <field name="res_model">hr.compilance</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">tree,form</field>
+            <field name="view_id" ref="view_compilance_tree"/>
+        </record>
+<!-- Defining Child Menu Item For Action  -->
+		<menuitem id="menu_compilance" name="Compilance" parent="menu_compilance_all" action="action_hr_compilance"/>
+        
+   </data>
+</openerp>

@@ -1,0 +1,91 @@
+# -*- coding: utf-8 -*-
+
+from openerp.osv import fields, osv
+from openerp.tools.translate import _
+
+class event_event(osv.osv):
+    _inherit = 'event.event'
+
+    def button_done(self, cr, uid, ids, context=None):
+        super(event_event, self).button_done(cr, uid, ids, context=context)
+        for event in self.browse(cr, uid, ids, context=context):
+            event.accommodation_id.write({'state': 'available'})
+        return True
+    
+class event_registration(osv.osv):
+    _inherit = 'event.registration'
+
+    _columns = {
+		'country_id': fields.many2one('res.country', 'Country'),
+		'accommodation_req': fields.boolean('Accommodation Required', help="accommodation is required"),
+		'days_to_stay': fields.integer('Days to Stay'),
+		'accommodation_id' : fields.many2one('event.accommodation', 'Accommodation'),
+        'age': fields.selection([('adult', 'Adult'), ('child', 'children')], 'Age', required=True),
+    }
+
+    _defaults = {
+        'age': 'adult',
+    }
+    
+    def create(self, cr, uid, vals, context=None):
+        ctx = dict(context or {}, mail_create_nolog=True)
+        new_id = super(event_registration, self).create(cr, uid, vals, context=ctx)
+        partner_ids = []
+        if vals.get("partner_id"):
+            partner_ids = [vals.get("partner_id")]
+            self.message_subscribe(cr, uid, [new_id], [vals.get("partner_id")], context=context)
+        self.message_post(cr, uid, [new_id], body=_("Your Registration has been received and is in pending state."), partner_ids=partner_ids, context=ctx)
+        return new_id
+
+    def confirm_registration(self, cr, uid, ids, context=None):
+        temp_obj = self.pool.get('email.template')
+        accommodation_obj = self.pool.get('event.accommodation')
+        event_obj = self.pool.get('event.event')
+        model_data_obj = self.pool['ir.model.data']
+        acco_template_id = model_data_obj.get_object_reference(cr, uid, 'event_accommodation', 'email_template_accomodation_confirmation')[1]
+        reg_template_id = model_data_obj.get_object_reference(cr, uid, 'event_accommodation', 'email_template_registration_confirmation')[1]
+        for reg in self.browse(cr, uid, ids, context=context or {}):
+            event_obj.message_post(cr, uid, [reg.event_id.id], body=_('New registration confirmed: %s.') % (reg.name or '', ),subtype="event.mt_event_registration", context=context)
+            if reg.accommodation_req and reg.accommodation_id:
+                guests = self.search(cr, uid, [('accommodation_id', '=', reg.accommodation_id.id), ('state', 'in', ['open', 'done'])], count=True, context=context)
+                if reg.accommodation_id.capacity <= guests:
+                    raise osv.except_osv(_('Error!'), _('Please select another accommodation as this accommodation is now fully booked'))
+                if reg.accommodation_id.capacity == (guests + 1):
+                    reg.accommodation_id.write({'state': 'booked'})
+                temp_obj.send_mail(cr, uid, acco_template_id, reg.id, force_send=True, context=context)
+                temp_obj.send_mail(cr, uid, reg_template_id, reg.id, force_send=True, context=context)
+        self.message_post(cr, uid, ids, body=_('Event Registration confirmed.'), context=context)
+        return self.write(cr, uid, ids, {'state': 'open'}, context=context)
+    
+class event_accommodation(osv.osv):
+	_name = 'event.accommodation'
+	_description = 'Accommodation'
+	_inherit = ['mail.thread', 'ir.needaction_mixin']
+         
+	_columns = {
+        'name': fields.related('partner_id', 'name', type="char", string="Name", readonly=True),
+		'partner_id' : fields.many2one('res.partner', 'House Owner', required=True),
+		#'user_id' : fields.many2one('res.users', 'Guest', required=True),
+		#'event_id' : fields.many2one('event.event', 'Event', required=True),
+		'state': fields.selection([('available', 'Available'), ('booked', 'Booked')], 'State', required=True),
+		'phone': fields.char('Phone'),
+		'mobile': fields.char('Mobile'),
+		'email': fields.char('Email'),
+		'street': fields.char('Street'),
+        'zip': fields.char('Zip', change_default=True, size=24),
+        'city': fields.char('City'),
+        'country_id': fields.many2one('res.country', 'Country',
+            			change_default=True),
+        'state_id': fields.many2one("res.country.state", 'State',
+		            change_default=True, domain="[('country_id','=',country_id)]"),
+        'company_id': fields.many2one('res.company', 'Company',
+            		ondelete='cascade', help="Only if this bank account belong to your company"),
+		'registartion_ids': fields.one2many('event.registration', 'accommodation_id', 'Registartions'),
+		'capacity': fields.integer('Capacity to provide accommodation',required=True),
+	}
+
+	_defaults = {
+        'state': 'available',
+        'capacity': 1,
+    }
+    

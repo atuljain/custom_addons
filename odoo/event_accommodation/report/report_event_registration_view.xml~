@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+        <record model ="ir.ui.view" id="report_event_accommodation_graph">
+            <field name="name">report.event.accomodation.graph</field>
+            <field name="model">report.event.accommodation</field>
+            <field name="arch" type="xml">
+                <graph string="Accommodations"  type="pivot" >
+                    <field name="event_id" type="row"/>
+                    <field name="event_date" interval="month" type="col"/>
+                    <field name="nbregistration" type="measure"/>
+                    <field name="confirm_state" type="measure"/>
+                </graph>
+            </field>
+        </record>
+
+        
+        <record model="ir.actions.act_window" id="action_report_event_accommodation">
+            <field name="name">Accommodation Analysis</field>
+            <field name="res_model">report.event.accommodation</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">graph</field>
+            <field name="context">{"group_by_no_leaf":1, "group_by":[]}</field>
+        </record>
+
+        <record model="ir.actions.act_window.view" id="action_report_event_accommodation_graph">
+            <field name="sequence" eval="2"/>
+            <field name="view_mode">graph</field>
+            <field name="view_id" ref="report_event_accommodation_graph"/>
+            <field name="act_window_id" ref="action_report_event_accommodation"/>
+        </record>
+
+        <menuitem parent="event.menu_reporting_events" action="action_report_event_accommodation" id="menu_report_event_accommodation" sequence="3" groups="event.group_event_manager"/>
+
+    </data>
+</openerp>

@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <record model="ir.module.category" id="compilance_category">
+        <field name="name">Compilance</field>
+        <field name="sequence">1</field>
+    </record>
+    
+    <record model="res.groups" id="group_compilance_manager">
+        <field name="name">Compilance Manager</field>
+        <field name="category_id"  ref="compilance_category"/>
+    </record>
+    
+    <record model="res.groups" id="group_compilance_user">
+        <field name="name">Compilance User</field>
+        <field name="category_id"  ref="compilance_category"/>
+    </record>
+    
+    <!-- Record Rule.. 
+       <field name="domain_force">[('responsible_id','=',user.id)]</field>
+       
+    
+    <record model="ir.rule" id="rule_manager">
+        <field name="name">Personal Course</field>
+        <field name="model_id" ref="model_hr_compilance"/>
+     
+        <field name="groups" eval="[(4, ref('group_compilance_user'))]"/>
+    </record>
+    -->
+    </data>
+</openerp>

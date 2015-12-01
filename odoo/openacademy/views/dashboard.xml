@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<openerp>
+    <data>
+
+    <record model="ir.actions.act_window" id="action_openacademy_session_graph">
+        <field name="name">Session Graph</field>
+        <field name="res_model">openacademy.session</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">graph</field>
+    </record>
+
+    <record model="ir.ui.view" id="view_board_openacademy_form">
+        <field name="name">Openacademy.dashboard</field>
+        <field name="model">board.board</field>
+        <field name="arch" type="xml">
+            <form string="OpenAcademy Dashboard" version="7.0">
+                <board stype="1-2">
+                    <column>
+                        <action name="%(action_session)d" string="Session"/>
+                    </column>
+                    <column>
+                        <action name="%(action_course)d" string="Course"/>
+                        <!-- <action name="%(action_openacademy_session_graph)d" string="Session Graph"/> -->
+                    </column>
+                </board>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.actions.act_window" id="action_openacademy_board">
+        <field name="name">OpenAcademy</field>
+        <field name="res_model">board.board</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">form</field>
+        <field name="view_id" ref="view_board_openacademy_form"/>
+        <!-- <field name="domain">[('state','=', 'confirm')]</field> -->
+       <!--  <field name="context">{'search_default_confirm': 1}</field> -->
+    </record>
+    
+    <menuitem name="Dashboard OpenAcademy" id="menu_openacademy_board" parent="menu_general" 
+                   action="action_openacademy_board"/>
+    
+    </data>
+</openerp>
